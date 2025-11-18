@@ -1,0 +1,91 @@
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+public class Sender {
+	public static void main(String[] args) 
+	{
+		Scanner sc = new Scanner(System.in);
+		try{
+			Socket s=new Socket("localhost",6879);
+			DataOutputStream dataout=new DataOutputStream(
+			s.getOutputStream());
+
+			System.out.println("Enter data: ");
+			String data = sc.nextLine();
+
+			int cnt = 0;
+			String str = "";
+			for (int i = 0; i < data.length(); i++)
+			{
+				char ch = data.charAt(i);
+				if (ch == '1')
+				{
+					cnt++;
+					if (cnt < 5)
+					{
+						str += ch;
+					}
+					else
+					{
+						str = str + ch + '0';
+						cnt = 0;
+					}
+				}
+				else
+				{
+					str += ch;
+					cnt = 0;
+				}
+			}
+			System.out.println("Flag is: 01111110");
+			str= "01111110" + str + "01111110";
+			System.out.println("Data stuffed in client: " + str);
+			System.out.println("Sending to server for unstuffing");
+			dataout.writeUTF(str);
+			dataout.flush();
+			dataout.close();
+			s.close();
+		}catch(Exception e){System.out.println(e);}
+	}
+}
+
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+public class Reciever {
+	public static void main(String[] args) 
+	{
+		try{
+			ServerSocket ss=new ServerSocket(6879);
+			Socket s=ss.accept();
+			DataInputStream datain=new DataInputStream(s.getInputStream());
+			String str = datain.readUTF();
+			System.out.println("Stuffed data from client: " + str);
+			System.out.println("Unstuffed data: ");
+			int cnt = 0;
+			for (int i = 8; i < str.length() - 8; i++)
+			{
+				char ch = str.charAt(i);
+				if (ch == '1')
+				{
+					cnt++;
+					System.out.print(ch);
+					if (cnt == 5)
+					{
+						i++;
+						cnt = 0;
+					}
+				}
+				else
+				{
+					System.out.print(ch);
+					cnt = 0;
+				}
+			}
+			System.out.println();
+			ss.close();
+		}catch(Exception e){System.out.println(e);}
+	}
+}
