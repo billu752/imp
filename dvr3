@@ -1,0 +1,54 @@
+import java.util.Scanner; 
+ 
+public class DistanceVectorRouting { 
+    static class Node { 
+        int[] dist = new int[20]; 
+        int[] from = new int[20]; 
+    } 
+ 
+    public static void main(String[] args) { 
+        int[][] dmat = new int[20][20]; 
+        Node[] rt = new Node[10]; 
+        int n, i, j, k, count = 1; 
+ 
+        Scanner scanner = new Scanner(System.in); 
+ 
+        System.out.println("Enter the number of nodes:"); 
+        n = scanner.nextInt(); 
+ 
+        for (i = 1; i <= n; i++) { 
+            rt[i] = new Node(); 
+            for (j = 1; j <= n; j++) { 
+                System.out.printf("Enter the cost between node %d and node %d: ", i, j); 
+                dmat[i][j] = scanner.nextInt(); 
+                dmat[i][i] = 0; 
+                rt[i].dist[j] = dmat[i][j]; 
+                rt[i].from[j] = j; 
+            } 
+        } 
+ 
+    
+        do { 
+            for (i = 1; i <= n; i++) { 
+                for (j = 1; j <= n; j++) { 
+                    for (k = 1; k <= n; k++) { 
+                        if (rt[i].dist[j] > dmat[i][k] + rt[k].dist[j]) { 
+                            rt[i].dist[j] = rt[i].dist[k] + rt[k].dist[j]; 
+                            rt[i].from[j] = k; 
+                        } 
+                    } 
+                } 
+            } 
+            count++; 
+        } while (count < n); 
+ 
+        for (i = 1; i <= n; i++) { 
+            System.out.printf("\nDistance Table for router %c is \n", (char) (i + 64)); 
+            for (j = 1; j <= n; j++) { 
+System.out.printf("\tNode %c Via %c, Distance: %d\n", (char) (j + 64), (char) 
+(rt[i].from[j] + 64), rt[i].dist[j]); 
+} 
+} 
+scanner.close(); 
+} 
+}
