@@ -1,0 +1,76 @@
+import java.io.*;
+import java.net.*;
+
+class UDPServer {
+    public static void main(String args[]) throws Exception {
+        DatagramSocket ss = new DatagramSocket(7999);
+
+        System.out.println("SERVER RUNNING");
+
+        while (true) {
+            byte[] receiveData = new byte[1024];
+            byte[] sendData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            String message = "";
+            String modifiemsg = "";
+
+            ss.receive(receivePacket);
+
+            message = new String(receivePacket.getData());
+
+            InetAddress IPAddress = receivePacket.getAddress();
+            int port = receivePacket.getPort();
+
+            System.out.println("FROM CLIENT : " + IPAddress + " : " + message);
+            modifiemsg = message.toUpperCase();
+            sendData = modifiemsg.getBytes();
+
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, port);
+
+            ss.send(sendPacket);
+
+            System.out.println("Data Sent successfully");
+        }
+    }
+}
+
+
+import java.io.*;
+import java.net.*;
+
+class UDPClient {
+    public static void main(String args[]) throws Exception {
+
+        BufferedReader inputstream = new BufferedReader(new InputStreamReader(System.in));
+
+        DatagramSocket cs = new DatagramSocket();
+
+        InetAddress IPAddress = InetAddress.getByName("localhost");
+        byte[] sendData = new byte[1024];
+        byte[] receiveData = new byte[1024];
+
+        System.out.println("Enter your message here: (Type END to stop)");
+
+        while (true) {
+            String message = inputstream.readLine();
+
+            if (message.equals("END")) {
+                cs.close();
+                System.exit(0);
+            } else {
+                sendData = message.getBytes();
+
+                DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 7999);
+
+                cs.send(sendPacket);
+
+                DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
+                cs.receive(receivePacket);
+
+                String modifiemsg = new String(receivePacket.getData());
+                System.out.println("FROM SERVER: " + modifiemsg);
+            }
+        }
+    }
+}
