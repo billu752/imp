@@ -1,0 +1,52 @@
+import java.util.*;
+public class LeakyBucket {
+	
+	static void flow(int pktsize, int output)
+	{
+		int buketsize = 512;
+		if (pktsize > buketsize)
+		{
+			System.out.println("Bucket overflow");
+		}
+		
+		else 
+		{
+			try{
+				Thread.sleep(10000);
+				while (pktsize > output)
+				{
+					System.out.println(output + " bytes");
+					pktsize = pktsize - output;
+				}
+				
+				if (pktsize > 0)
+				{
+					System.out.println(pktsize + " bytes outflow");
+				}
+			}catch (InterruptedException e) {
+				System.out.println("Interrupted!");
+			}
+			
+		}
+	}
+	
+	public static void main(String[] args)
+	{
+		
+		int output, pktsize, n;
+		Scanner input = new Scanner(System.in);
+		Random rand = new Random();
+		System.out.println("Enter output rate");
+		output = input.nextInt();
+		System.out.println("Enter the number of packets");
+		n = input.nextInt();
+		for (int i = 1; i <= n; i++)
+		{
+			pktsize = rand.nextInt(1000);
+			System.out.println("packetno: " + i + " packetsize=" + pktsize);
+			
+			flow(pktsize, output);
+		}
+		
+	}
+}
